@@ -1,0 +1,21 @@
+{
+  "name": "apidemo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Aparicio",
+  "license": "ISC",
+  "dependencies": {
+    "@uphold/uphold-sdk-javascript": "^2.0.4",
+    "csv-parse": "^2.0.4",
+    "ejs": "^2.5.7",
+    "express": "^4.15.4",
+    "fast-csv": "^2.4.1",
+    "multer": "^1.3.0",
+    "request": "^2.81.0",
+    "uphold-sdk-node": "^2.2.3"
+  }
+}

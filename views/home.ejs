@@ -1,0 +1,22 @@
+<h1>Bienvenido</h1>
+<h2>Actualmente estas logueado como <%= user.name %></h2>
+
+<!-- ESE BETA VA AQUI -->
+    <form id="upload-form" action="/upload/data" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend>Upload Data</legend>
+            <div>
+                <!-- The name here is important, and will be used later to reference the data -->
+                <input type="file" name="csvdata">
+            </div>
+            <div>
+                <input type="submit" value="Submit"/>
+            </div>
+        </fieldset>
+    </form>
+    
+    <div class="container">
+        <% dummy.forEach(function(dumm){ %>
+              <p><%= dumm %></p>  
+        <% }) %>
+    </div>
