@@ -1,0 +1,30 @@
+<h1>Bienvenido</h1>
+
+<!-- ESE BETA VA AQUI -->
+    <form id="upload-form" action="/upload/data" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend>Upload Data</legend>
+            <div>
+                <!-- The name here is important, and will be used later to reference the data -->
+                <input type="file" name="csvdata">
+            </div>
+            <div>
+                <input type="submit" value="Submit"/>
+            </div>
+        </fieldset>
+    </form>
+    
+    
+    
+    <% if(data){ %>
+        <div class="container">
+            <% data.forEach(function(dumm){ %>
+                  <p><%= dumm.nombre %></p>
+                  <span> <%= dumm.ci %></span>
+            <% }) %>
+        </div> 
+        <a href="/users">Enviar bono a todos</a>
+    <% } else { %>
+        <h1>Aun no hay datos cargados</h1>
+    <% } %>
+    

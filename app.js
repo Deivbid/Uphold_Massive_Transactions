@@ -1,11 +1,12 @@
 //EXPRESS
-var express = require("express");
-var multer  = require('multer');
-var upload = multer({ dest: 'uploads/' });
-var fs = require('fs');
-//var csv = require('csv-parse');
-var csv = require('fast-csv');
-var app = express();
+var express     = require("express");
+var multer      = require('multer');
+var upload      = multer({ dest: 'uploads/' });
+var fs          = require('fs');
+var mongoose    = require("mongoose");
+var csv         = require('fast-csv');
+var app         = express();
+var empleado    = require("./models/empleado");
 
 //REQUEST
 var request = require("request");
@@ -20,13 +21,18 @@ var Uphold = require('uphold-sdk-node')({
 //Global Variables
 var storedState;
 var currentFilePath = '';
-
-
-
-
+//View Engine
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
 
+mongoose.Promise = global.Promise;
+const databaseUri = process.env.MONGODB_URI || 'mongodb://localhost/Uphold_Sofos';
+mongoose.connect(databaseUri, { useMongoClient: true })
+      .then(() => console.log(`Database connected`))
+      .catch(err => console.log(`Database connection error: ${err.message}`));
+      
 
+var Test = [{'ci':'26186526', 'nombre':'David', 'usuario':'Deivbid', 'empresa':'SME'}, {'ci':'25196796', 'nombre':'Patrick', 'usuario':'Patricio', 'empresa':'SME'}]
 
 app.get("/", function(req, res){
    res.render("index");
@@ -142,14 +148,43 @@ app.get("/transaction", function(req, res) {
             
             
             Uphold.createTransaction(options, function(err, transaction){
-                res.json(transaction);
+                console.log(transaction);
             })        
        })
        
-       res.render()
+});
+
+app.get("/probando", function(req, res) {
+    
+   empleado.find({}, function(err, all){
+      
+      if(err)
+      {
+          console.log(err);
+      }
+      else
+      {
+          res.render("home2", {data:all});
+      }
        
+   });
+    
+    
 });
     
+app.get("/generar_datos", function(req, res) {
+    Test.forEach(function(empleados){
+        empleado.create(empleados,function(err, newEmployer){
+            if(err){
+                console.log(err);
+            } else {
+                console.log("Todo bien");
+            }                 
+        });  
+    });
+    
+    res.redirect("/probando");
+});
 
 
 

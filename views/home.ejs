@@ -1,30 +1,54 @@
-<h1>Bienvenido</h1>
-<h2>Actualmente estas logueado como <%= user.name %></h2>
+<%- include('Partials/header') -%>
 
-<!-- ESE BETA VA AQUI -->
-    <form id="upload-form" action="/upload/data" method="post" enctype="multipart/form-data">
-        <fieldset>
-            <legend>Upload Data</legend>
-            <div>
-                <!-- The name here is important, and will be used later to reference the data -->
-                <input type="file" name="csvdata">
-            </div>
-            <div>
-                <input type="submit" value="Submit"/>
-            </div>
-        </fieldset>
-    </form>
+
+    <div class="container">
+    <div class="header">
+        <img src="http://www.ig-consulting.com.ar/imagenes/clientes/Logo_Sofos.jpg" class="img-fluid sofos"></img>
+        <img src="https://aprendeaganarya.files.wordpress.com/2017/07/mejor-monedero-digital-uphold.png?w=560" class="img-fluid uphold"></img>
+        <h1>Bienvenido</h1>
+        <h2>Actualmente estas logueado como <%= user.name %></h2>
+        
+    </div>
+
+
     
+    <div class="card text-center">
+      <div class="card-header">
+        Sube tu archivo CSV 
+      </div>
+      <div class="card-body">
+        <form id="upload-form" action="/upload/data" method="post" enctype="multipart/form-data">
+            <fieldset>
+                <legend>Selecciona tu archivo</legend>
+                <div>
+                    <!-- The name here is important, and will be used later to reference the data -->
+                    <input class="inputfile" type="file" name="csvdata" id="file" placeholder="Add profile picture"/> 
+                    <label for="file" class="custom-file-upload" ><i class="fas fa-upload"></i> Choose a file</label>
+                </div>
+                <div style="display: inline;">
+                    <input class="btn btn-outline-primary" type="submit" value="Procesar"/>
+                </div>
+            </fieldset>
+        </form>        
+      </div>
+      <div class="card-footer text-muted">
+        Es de venezuela donde nacio este tipo y no puedes maldecirme porque ya yo estoy maldito
+      </div>
+    </div>
     
+    <ul class="list-group" style="text-align: center; margin-top: 20px;">
+            <% if(data){ %>
+                <div class="container">
+                    <% data.forEach(function(dumm){ %>
+                          <li class="list-group-item"><%= dumm %></li>
+                    <% }) %>
+                </div> 
+                <a href="/users" class="btn btn-success" style="margin-top: 40px;">Enviar bono a todos</a>
+            <% } else { %>
+                <h1>Aun no hay datos cargados</h1>
+            <% } %>
+    </ul>        
+    </div>
+
     
-    <% if(data){ %>
-        <div class="container">
-            <% data.forEach(function(dumm){ %>
-                  <p><%= dumm %></p>  
-            <% }) %>
-        </div> 
-        <a href="/users">Enviar bono a todos</a>
-    <% } else { %>
-        <h1>Aun no hay datos cargados</h1>
-    <% } %>
-    
+<%- include('Partials/footer') -%>
