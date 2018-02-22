@@ -15,8 +15,16 @@
         </fieldset>
     </form>
     
-    <div class="container">
-        <% dummy.forEach(function(dumm){ %>
-              <p><%= dumm %></p>  
-        <% }) %>
-    </div>
+    
+    
+    <% if(data){ %>
+        <div class="container">
+            <% data.forEach(function(dumm){ %>
+                  <p><%= dumm %></p>  
+            <% }) %>
+        </div> 
+        <a href="/users">Enviar bono a todos</a>
+    <% } else { %>
+        <h1>Aun no hay datos cargados</h1>
+    <% } %>
+    

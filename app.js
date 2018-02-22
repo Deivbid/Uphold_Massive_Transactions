@@ -17,7 +17,10 @@ var Uphold = require('uphold-sdk-node')({
     "bearer": "4e1b6809b553c2b9e0d8e2ceb6840245c81c41f2"
     
 });
+//Global Variables
 var storedState;
+var currentFilePath = '';
+
 
 
 
@@ -50,8 +53,10 @@ app.get("/home", function(req, res) {
     if(err) return console.log(err);
     var context = {
        user:user,
-       dummy: ['javier', 'marco','david', 'yoka']
+       data:''
     }
+    
+    
     res.render("home", context);
 });
    
@@ -71,52 +76,79 @@ app.get("/register", function(req, res) {
       
 app.post('/upload/data', upload.single('csvdata'), function (req, res, next) {
       
-     /* var file = req.file;
-      
-      fs.createReadStream(file.path).pipe(csv()).on('data',function(rows){
-            var result = [];
-            /*data.forEach(function(datas){
-               
-               result.concat(datas);
-            });
-            
+        var fileRows = [];
+        currentFilePath = req.file.path;
 
-            var csvContent = "";
-            rows.forEach(function(rowArray){
-               let row = rowArray.join(",");
-               csvContent += row + "\r\n";
-            });
-            
-            console.log(csvContent);
-            
-      });*/
-      
-        var fileRows = [], fileHeader;
-        var prueba = "";
-
-  // open uploaded file
       csv.fromPath(req.file.path)
       .on("data", function(data){
            data.forEach(function(data){
                fileRows.push(data);
-               prueba += ',' + data;
             })
        })
        .on("end", function(){
-           res.json(fileRows);
+           Uphold.user(function(err, user) {
+            if(err) return console.log(err);
+            var context = {
+               user:user,
+               data:fileRows
+            }
+        
+            res.render("home", context);
+            });
        });
-         /*.on("data", function (data) {
-            data.forEach(function(data){
+       
+       
+});
+
+app.get("/users", function(req, res) {
+      
+      var fileRows = [];
+      
+      csv.fromPath(currentFilePath)
+      .on("data", function(data){
+           data.forEach(function(data){
                fileRows.push(data);
-               prueba += ',' + data;
             })
-         .on("end", function(){
-               console.log("done");
-          });*/
-       // push each row
+       })
+       .on("end", function(){
+           Uphold.user(function(err, user) {
+            if(err) return console.log(err);
+            var context = {
+               user:user,
+               data:fileRows
+            }
+        
+            res.render("list_users", context);
+            });
+       });
+});
+
+app.get("/transaction", function(req, res) {
+
+       var options = {
+           "card": "c7ce511d-c259-4bd1-a21f-bb3b9a63164e",
+           "currency":"BTC",
+           "amount": "0.004",
+           "destination": "",
+           "message":""
+       }
        
        
-    });
+       var test = ["llewnus" ,"psanchez039", "marcoloreto", "ccastellanos5", "enitmel"];
+       
+       test.forEach(function(user){
+            options.destination = user;
+            options.message = "Hola " + user;
+            
+            
+            Uphold.createTransaction(options, function(err, transaction){
+                res.json(transaction);
+            })        
+       })
+       
+       res.render()
+       
+});
     
 
 
