@@ -1,5 +1,21 @@
-<h1>Se han realizado transacciones a las siguientes personas</h1>
+<%- include('Partials/header') -%>
 
-<% data.forEach(function(data){ %>
-    <li> <%= data %></li>
-<%  }) %>
+
+<div class="jumbotron">
+  <h1 class="display-4">Se han realizado transacciones a las siguientes personas</h1>
+  <p class="lead"><i class="far fa-money-bill-alt"></i> Gracias por usar el servicio Upfos <i class="far fa-money-bill-alt"></i> </p>
+  <hr class="my-4">
+    <% data.forEach(function(data){ %>
+        <li class="list-group-item"> <%= data.name %></li>
+    <%  }) %>
+  <div>
+      <p class="lead">
+        <a class="btn btn-primary btn-lg" href="/main" role="button" style="margin-top: 30px;"> Volver </a>
+      </p>      
+  </div>
+</div>
+
+
+
+
+<%- include('Partials/footer') -%>

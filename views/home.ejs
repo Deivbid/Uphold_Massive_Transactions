@@ -39,16 +39,15 @@
     <ul class="list-group" style="text-align: center; margin-top: 20px;">
             <% if(data){ %>
                 <div class="container">
-                    <% data.forEach(function(dumm){ %>
-                          <li class="list-group-item"><%= dumm %></li>
-                    <% }) %>
+                        <% data.forEach(function(dumm){ %>
+                            <li class="list-group-item" name="hola"><%= dumm.name %></li>    
+                        <% }) %>
+                   
                 </div> 
-                <a href="/users" class="btn btn-success" style="margin-top: 40px;">Enviar bono a todos</a>
+                <a href="/transaction" class="btn btn-success" style="margin-top: 40px;">Enviar bono a todos</a>
             <% } else { %>
                 <h1>Aun no hay datos cargados</h1>
             <% } %>
     </ul>        
     </div>
-
-    
 <%- include('Partials/footer') -%>

@@ -1,3 +1,6 @@
+
+/*DESARROLLADO POR DAVID APARICIO - 1 NOCHE */ 
+
 //EXPRESS
 var express     = require("express");
 var multer      = require('multer');
@@ -21,6 +24,8 @@ var Uphold = require('uphold-sdk-node')({
 //Global Variables
 var storedState;
 var currentFilePath = '';
+
+               
 //View Engine
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
@@ -38,6 +43,19 @@ app.get("/", function(req, res){
    res.render("index");
 });
 
+app.get("/main", function(req, res){
+   
+     Uphold.user(function(err, user) {
+    if(err) return console.log(err);
+    var context = {
+       user:user,
+       data:''
+    }
+    
+    res.render("home", context);
+   });
+});
+
 //INDEX
 app.get("/home", function(req, res) {
    // check the stored state equals the state returned
@@ -53,36 +71,40 @@ app.get("/home", function(req, res) {
 
        });
    });
-   
-   
-   Uphold.user(function(err, user) {
-    if(err) return console.log(err);
-    var context = {
-       user:user,
-       data:''
-    }
-    
-    
-    res.render("home", context);
-});
-   
-    
+
+    res.redirect("/main");
 });
 
 app.get("/register", function(req, res) {
+
+
+   /* Uphold.createPAT('psanchez039', '1101911P2e3D4r5O', 'PAT description', false, function(err, res) {
+        if(err) return console.log(err);
+        // if two factor authentication is enabled on the account a One Time Password (OTP) will be required 
+        // once retrieved this method can be called again with the OTP like so 
+        // Uphold.createPAT('username', 'password', 'PAT description', 'OTP', function(err, res) {}); 
+        //if(res.otp) return getOTP();
+     
+        // add the PAT to the current uphold-sdk-node configs pat property and make authenticated calls 
+        Uphold.addPAT(res.accessToken).user(function(err, user) {
+            if(err) return console.log(err);
+            console.log(user);
+        });
+    });*/
+    
 
    var auth = Uphold.buildAuthURL();
 // store the state to validate against
    storedState = auth.state;
    res.redirect(auth.url);
-    
+   
 });
 
-
-      
 app.post('/upload/data', upload.single('csvdata'), function (req, res, next) {
       
         var fileRows = [];
+        var final = [];
+        var object = {};
         currentFilePath = req.file.path;
 
       csv.fromPath(req.file.path)
@@ -92,11 +114,25 @@ app.post('/upload/data', upload.single('csvdata'), function (req, res, next) {
             })
        })
        .on("end", function(){
+           
+           fileRows.forEach(function(rows) {
+               var tmp = rows.split(';');
+               
+               object = {
+                   'name':tmp[0],
+                   'ci':tmp[1],
+                   'uphold':tmp[2],
+                   'enterprise':tmp[3],
+               }
+               
+               final.push(object);
+           })
+           
            Uphold.user(function(err, user) {
             if(err) return console.log(err);
             var context = {
                user:user,
-               data:fileRows
+               data:final
             }
         
             res.render("home", context);
@@ -130,33 +166,88 @@ app.get("/users", function(req, res) {
 });
 
 app.get("/transaction", function(req, res) {
+    
+    
+       
 
-       var options = {
-           "card": "c7ce511d-c259-4bd1-a21f-bb3b9a63164e",
-           "currency":"BTC",
-           "amount": "0.004",
-           "destination": "",
-           "message":""
-       }
        
+       var options;
+        var fileRows = [];
+        var final = [];
+        var object = {};
        
-       var test = ["llewnus" ,"psanchez039", "marcoloreto", "ccastellanos5", "enitmel"];
-       
-       test.forEach(function(user){
-            options.destination = user;
-            options.message = "Hola " + user;
-            
-            
-            Uphold.createTransaction(options, function(err, transaction){
-                console.log(transaction);
-            })        
+
+      csv.fromPath(currentFilePath)
+      .on("data", function(data){
+           data.forEach(function(data){
+               fileRows.push(data);
+            })
        })
+       .on("end", function(){
+           
+           fileRows.forEach(function(rows) {
+               var tmp = rows.split(';');
+               
+               object = {
+                   'name':tmp[0],
+                   'ci':tmp[1],
+                   'uphold':tmp[2],
+                   'amount':tmp[3],
+               }
+               
+               final.push(object);
+           })
+           
+           Uphold.cards(function(err, cards){
+           cards.forEach(function(card){
+               if(card.currency == "BTC")
+               {    console.log(card.id);
+                    options = {
+                       "card": card.id,
+                       "currency":"BTC",
+                       "amount": "",
+                       "destination": "",
+                       
+                       "message":""
+                    }
+               }
+           })
+        });
+           
+           Uphold.user(function(err, user) {
+            if(err) return console.log(err);
+            var context = {
+               user:user,
+               data:final
+            }
+            
+                final.forEach(function(user){
+                    options.destination = user.uphold;
+                    options.message = "Hola " + user.name;
+                    options.amount = user.amount;
+                    
+                    
+                    Uphold.createTransaction(options, function(err, transaction){
+                        console.log(transaction);
+                    })        
+                })
+            
+            res.render("list_users", context);
+            
+            
+            });
+            
+
+       });
+       
+       
+       
        
 });
 
 app.get("/probando", function(req, res) {
     
-   empleado.find({}, function(err, all){
+  /* empleado.find({}, function(err, all){
       
       if(err)
       {
@@ -167,6 +258,15 @@ app.get("/probando", function(req, res) {
           res.render("home2", {data:all});
       }
        
+   });*/
+   
+   Uphold.cards(function(err, cards){
+       cards.forEach(function(card){
+           if(card.currency == "USD")
+           {
+               res.send(card);
+           }
+       })
    });
     
     
